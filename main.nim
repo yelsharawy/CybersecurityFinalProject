@@ -12,13 +12,15 @@ proc `$`(s : seq[byte]) : string =
     # result.setLen result.len-1 # trim off last newline
 
 proc preprocess(data : var seq[byte]) =
-    let originalLength = data.len
+    let # original length in bits
+        bitLen = data.len*8
+    
     # add single 1 bit
     data &= 0b1000_0000
     # set length to closest multiple of 512 bits (64 bytes), minus 8
     data.setLen (((data.len+7) div 64)+1) * 64 - 8
     for i in countdown(7, 0):
-        data &= byte(originalLength shr (i*8))
+        data &= byte(bitLen shr (i*8))
     assert data.len mod 64 == 0
 
 when isMainModule:
