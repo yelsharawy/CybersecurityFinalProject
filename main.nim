@@ -1,7 +1,7 @@
 #!/bin/env -S nim r
-import std/[os, strutils]
+import std/[os, strutils, endians, sugar]
 
-const hashConstants : array[8, uint32] = [
+var hashValues : array[8, uint32] = [
     0x6a09e667'u32,
     0xbb67ae85'u32,
     0x3c6ef372'u32,
@@ -24,14 +24,15 @@ const roundConstants : array[64, uint32] = [
 ]
 
 # "toString" for viewing data in binary
-proc `$`(s : seq[byte]) : string =
-    const bytesPerLine = 8
-    for i in countup(0, s.high, bytesPerLine):
-        for j in i..<min(s.len, i+8):
-            result &= (int s[j]).toBin(8)
+proc `$`[T : SomeInteger](s : seq[T]) : string =
+    const valsPerLine = 8 div sizeof(T)
+    result &= '\n'
+    for i in countup(0, s.high, valsPerLine):
+        for j in i..<min(s.len, i+valsPerLine):
+            result &= (int s[j]).toBin sizeof(T)*8
             result &= " "
         result[^1] = '\n' # replace last space with newline
-    # result.setLen result.len-1 # trim off last newline
+    result.setLen result.len-1 # trim off last newline
 
 proc preprocess(data : var seq[byte]) =
     let # original length in bits
@@ -39,11 +40,38 @@ proc preprocess(data : var seq[byte]) =
     
     # add single 1 bit
     data &= 0b1000_0000
-    # set length to closest multiple of 512 bits (64 bytes), minus 8
+    # set length to closest multiple of 512 bits (64 bytes), minus 64 bits (8 bytes)
     data.setLen (((data.len+7) div 64)+1) * 64 - 8
     for i in countdown(7, 0):
         data &= byte(bitLen shr (i*8))
     assert data.len mod 64 == 0
+
+# yields every 512-bit (64-byte) chunk of `data`
+iterator chunks(data : openArray[byte]) : seq[byte] =
+    assert data.len mod 64 == 0
+    for i in countup(0, data.high, 64):
+        yield data[i..<i+64]
+
+proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
+    assert data.len == 64
+    # Copy the input data from step 1 into a new array
+    # where each entry is a 32-bit word
+    result = newSeqUninitialized[uint32](16)
+    var j : int
+    for i in 0..result.high:
+        bigEndian32(addr result[i], unsafeAddr data[j])
+        j += 4
+    # Add 48 more words initialized to zero such that we have an array w[0..63]
+    result.setLen result.len + 48
+    
+    #[
+    TODO:
+        Modify the zero-ed indexes at the end of the array using the following algorithm:
+        For i from w[16…63]:
+            s0 = (w[i-15] rightrotate 7) xor (w[i-15] rightrotate 18) xor (w[i-15] rightshift 3)
+            s1 = (w[i- 2] rightrotate 17) xor (w[i- 2] rightrotate 19) xor (w[i- 2] rightshift 10)
+            w[i] = w[i-16] + s0 + w[i-7] + s1
+    ]#
 
 when isMainModule:
     var # read from first argument, or stdin if none given
@@ -53,7 +81,11 @@ when isMainModule:
     for c in inputStr:
         data &= byte c
     
-    echo data
+    dump data
     preprocess(data)
-    echo data
-    echo data.len
+    dump data
+    dump data.len
+    for chunk in data.chunks:
+        dump chunk
+        var messageSchedule = createMessageSchedule(data)
+        dump messageSchedule
