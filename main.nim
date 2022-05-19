@@ -4,7 +4,7 @@ import std/[os, strutils]
 # "toString" for viewing data in binary
 proc `$`(s : seq[byte]) : string =
     const bytesPerLine = 8
-    for i in countup(0, s.len-7, bytesPerLine):
+    for i in countup(0, s.high, bytesPerLine):
         for j in i..<min(s.len, i+8):
             result &= (int s[j]).toBin(8)
             result &= " "
