@@ -1,6 +1,6 @@
 w = "01101111001000000111011101101111"
 
-# note that this works for shifts lesss thann the length
+
 def rotate(w, shift):
     first = w[0:len(w)-shift]
     second = w[len(w)-shift:]
