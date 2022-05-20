@@ -69,6 +69,10 @@ proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
     # Add 48 more words initialized to zero such that we have an array w[0..63]
     result.setLen result.len + 48
 
+    for i in 16..63:
+       s0 = rightRotate(result[i-15], 7) xor rightRotate(result[i-15], 18) xor rightRotate(result[i-15], 3)
+       s1 = rightRotate(result[i-2], 17) xor rightRotate(result[i-2], 19) xor rightRotate(result[i-2], 10)
+       result[i] = result[i-16] + s0 + result[i-7] + s1
     #[
     TODO:
         Modify the zero-ed indexes at the end of the array using the following algorithm:
