@@ -54,34 +54,31 @@ iterator chunks(data : openArray[byte]) : seq[byte] =
 
 proc rightRotate(x : uint32, d: uint32) :uint32 =
     var first = x shr d
-    var second = (x and ((1'u32 shl d) - 1)) shl (32 - d)
+    var second = x shl (32 - d)
     return first or second
 
 proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
     assert data.len == 64
     # Copy the input data from step 1 into a new array
     # where each entry is a 32-bit word
-    result = newSeqUninitialized[uint32](16)
+    # (It also says to add 48 words initialized to 0, but they will be overwritten anyway)
+    result = newSeqUninitialized[uint32](64)
     var j : int
-    for i in 0..result.high:
+    for i in 0..<16:
         bigEndian32(addr result[i], unsafeAddr data[j])
         j += 4
-    # Add 48 more words initialized to zero such that we have an array w[0..63]
-    result.setLen result.len + 48
-
-    for i in 16..63:
-        let
-            s0 = rightRotate(result[i-15], 7) xor rightRotate(result[i-15], 18) xor rightRotate(result[i-15], 3)
-            s1 = rightRotate(result[i-2], 17) xor rightRotate(result[i-2], 19) xor rightRotate(result[i-2], 10)
-        result[i] = result[i-16] + s0 + result[i-7] + s1
     #[
-    TODO:
         Modify the zero-ed indexes at the end of the array using the following algorithm:
         For i from w[16…63]:
             s0 = (w[i-15] rightrotate 7) xor (w[i-15] rightrotate 18) xor (w[i-15] rightshift 3)
             s1 = (w[i- 2] rightrotate 17) xor (w[i- 2] rightrotate 19) xor (w[i- 2] rightshift 10)
             w[i] = w[i-16] + s0 + w[i-7] + s1
     ]#
+    for i in 16..63:
+        let
+            s0 = rightRotate(result[i-15], 7) xor rightRotate(result[i-15], 18) xor result[i-15] shr 3
+            s1 = rightRotate(result[i-2], 17) xor rightRotate(result[i-2], 19) xor result[i-2] shr 10
+        result[i] = result[i-16] + s0 + result[i-7] + s1
 
 when isMainModule:
     var # read from first argument, or stdin if none given
