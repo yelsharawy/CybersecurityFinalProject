@@ -54,7 +54,7 @@ iterator chunks(data : openArray[byte]) : seq[byte] =
 
 proc rightRotate(x : uint32, d: uint32) :uint32 =
     var first = x shr d
-    var second = (x and ((1 shl d) -1)) shl (32 - d)
+    var second = (x and ((1'u32 shl d) - 1)) shl (32 - d)
     return first or second
 
 proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
@@ -70,9 +70,10 @@ proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
     result.setLen result.len + 48
 
     for i in 16..63:
-       s0 = rightRotate(result[i-15], 7) xor rightRotate(result[i-15], 18) xor rightRotate(result[i-15], 3)
-       s1 = rightRotate(result[i-2], 17) xor rightRotate(result[i-2], 19) xor rightRotate(result[i-2], 10)
-       result[i] = result[i-16] + s0 + result[i-7] + s1
+        let
+            s0 = rightRotate(result[i-15], 7) xor rightRotate(result[i-15], 18) xor rightRotate(result[i-15], 3)
+            s1 = rightRotate(result[i-2], 17) xor rightRotate(result[i-2], 19) xor rightRotate(result[i-2], 10)
+        result[i] = result[i-16] + s0 + result[i-7] + s1
     #[
     TODO:
         Modify the zero-ed indexes at the end of the array using the following algorithm:
