@@ -6,7 +6,7 @@ SHA-256 is a cryptographic hash function part of the SHA-2 family that generates
 
 Hashing is a one-way process of scrambling raw information that cannot be reverse-engineered back to its original form. This function is called the hash function and we call the output a hash value/digest. On the other hand, encryption is a two-way process that can be decrypted into a readable form again.
 
-<img src="https://www.simplilearn.com/ice9/free_resources_article_thumb/hashing1.PNG" width="600" height="500" />
+<img src="https://www.simplilearn.com/ice9/free_resources_article_thumb/hashing1.PNG" width="780" height="500" />
 
 ### Characteristics of the SHA algorithm:
 
