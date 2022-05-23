@@ -81,7 +81,7 @@ proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
         result[i] = result[i-16] + s0 + result[i-7] + s1
 
 # Step 6 - Compression (& 7)
-proc compress(data : var openArray[uint32]) =
+proc compress(data : openArray[uint32]) =
     # Initialize variables a, b, c, d, e, f, g, h and set them equal to the current hash values respectively.
     # here we're just using an array as a-h
     var hashVars = hashValues
@@ -128,4 +128,5 @@ when isMainModule:
         var messageSchedule = createMessageSchedule(data)
         dump messageSchedule
         compress(messageSchedule)
-        dump messageSchedule
+    
+    dump hashValues # final hash! (printed in decimal for now)
