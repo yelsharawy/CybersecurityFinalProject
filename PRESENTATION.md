@@ -18,6 +18,8 @@ Hashing is a one-way process of scrambling raw information that cannot be revers
 
 ### History of SHA hash functions
 
+The SHA family algorithm was originally created developed by the US National Security Agency (NSA) and published by the National Institute of Standards and Technology (NIST). Its first version SHA-0, published in 1930, had a 160 bit digest length and 40 digit long has values. However, SHA-0 was eventually cracked
+
 ### Applications of Hashing
 
 ## Breakdown of Hash Algorithm
