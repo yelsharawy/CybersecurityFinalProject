@@ -12,3 +12,7 @@ Yusuf: I started work on the pre-processing section of the SHA-256 algorithm. We
 We talked about why binary strings (i.e. `"00110000"`) shouldn't be used for bitwise or mathematical operations. We then implemented the `rightRotate` function and used it to finish the `createMessageSchedule` function. Angela also learned Nim syntax and caught up with Yusuf's code.
 
 Yusuf: At home, I fixed syntax errors, then realized that our code was producing a different output from the guide. After a lot of investigating, and cleaning up code while I was at it, I realized that we had accidentally used `rightRotate` in two places where a simple right-shift was required. With that fixed, step 5 of the guide is truly complete.
+
+05/22
+
+Angela: I started looking how we could structure our presentation slides. I did an introduction summary to hashing functions and put a rudimentary outline of how I want the rest of the slides to look. 
