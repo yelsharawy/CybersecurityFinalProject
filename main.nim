@@ -80,6 +80,37 @@ proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
             s1 = rightRotate(result[i-2], 17) xor rightRotate(result[i-2], 19) xor result[i-2] shr 10
         result[i] = result[i-16] + s0 + result[i-7] + s1
 
+# Step 6 - Compression (& 7)
+proc compress(data : var openArray[uint32]) =
+    # Initialize variables a, b, c, d, e, f, g, h and set them equal to the current hash values respectively.
+    # here we're just using an array as a-h
+    var hashVars = hashValues
+    # Run the compression loop. The compression loop will mutate the values of a…h. The compression loop is as follows:
+    for i in 0..63:
+        #[
+            S1 = (e rightrotate 6) xor (e rightrotate 11) xor (e rightrotate 25)
+            ch = (e and f) xor ((not e) and g)
+            temp1 = h + S1 + ch + k[i] + w[i]
+            S0 = (a rightrotate 2) xor (a rightrotate 13) xor (a rightrotate 22)
+            maj = (a and b) xor (a and c) xor (b and c)
+            temp2 := S0 + maj
+            h = g
+            g = f
+            f = e
+            e = d + temp1
+            d = c
+            c = b
+            b = a
+            a = temp1 + temp2
+        ]#
+        discard # replace with code
+    
+    # After the compression loop, but still, within the chunk loop,
+    # we modify the hash values by adding their respective variables to them, a-h.
+    # As usual, all addition is modulo 2^32. (In Nim, just add, it will modulo by itself)
+    discard # replace with code
+
+
 when isMainModule:
     var # read from first argument, or stdin if none given
         inputStr = if paramCount() >= 1: readFile(paramStr(1)) else: stdin.readAll
@@ -95,4 +126,6 @@ when isMainModule:
     for chunk in data.chunks:
         dump chunk
         var messageSchedule = createMessageSchedule(data)
+        dump messageSchedule
+        compress(messageSchedule)
         dump messageSchedule
