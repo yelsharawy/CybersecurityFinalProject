@@ -13,6 +13,8 @@ We talked about why binary strings (i.e. `"00110000"`) shouldn't be used for bit
 
 Yusuf: At home, I fixed syntax errors, then realized that our code was producing a different output from the guide. After a lot of investigating, and cleaning up code while I was at it, I realized that we had accidentally used `rightRotate` in two places where a simple right-shift was required. With that fixed, step 5 of the guide is truly complete.
 
-05/22
+05/22/2022
 
 Angela: I started looking how we could structure our presentation slides. I did an introduction summary to hashing functions and put a rudimentary outline of how I want the rest of the slides to look. 
+
+Yusuf: From home (because I was absent), I prepared the skeleton code for the last parts of the algorithm. I also helped Angela understand the significance of a collision method being found for a hash algorithm.
