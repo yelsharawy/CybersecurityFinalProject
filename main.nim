@@ -89,7 +89,7 @@ proc compress(data : openArray[uint32]) =
     for i in 0..63:
         S1 = rightRotate(hashVars[4], 6) xor rightRotate(hashVars[4], 11) xor rightRotate(hashVars[4], 25)
         ch = (hashVars[4] and hashVars[5]) xor ((not hashVars[4]) and hashVars[6])
-        temp1 = hashVars[7] + S1 + ch + roundConstants[i] + result[i]
+        temp1 = hashVars[7] + S1 + ch + roundConstants[i] + data[i]
         S0 = rightRotate(hashVars[0], 2) xor rightRotate(hashVars[0], 13) xor rightRotate(hashVars[0], 22)
         maj = (hashVars[0] and hashVars[1]) xor (hashVars[0] and hashVars[2]) xor (hashVars[1] and hashVars[2])
         temp2 = S0 + maj
@@ -100,7 +100,7 @@ proc compress(data : openArray[uint32]) =
         hashVars[3] = hashVars[2]
         hashVars[2] = hashVars[1]
         hashVars[1] = hashVars[0]
-        hashVars[0] = temp1 + temp2 
+        hashVars[0] = temp1 + temp2
         #[
             S1 = (e rightrotate 6) xor (e rightrotate 11) xor (e rightrotate 25)
             ch = (e and f) xor ((not e) and g)
