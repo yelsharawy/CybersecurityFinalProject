@@ -45,9 +45,10 @@ proc preprocess(data : var seq[byte]) =
     # add single 1 bit
     data &= 0b1000_0000
     # set length to closest multiple of 512 bits (64 bytes), minus 64 bits (8 bytes)
-    data.setLen (((data.len+7) div 64)+1) * 64 - 8
-    for i in countdown(7, 0):
-        data &= byte(bitLen shr (i*8))
+    data.setLen (((data.len+7) div 64)+1) * 64
+    bigEndian64(addr data[^8], unsafeAddr bitLen)
+    # for i in countdown(7, 0):
+    #     data &= byte(bitLen shr (i*8))
     assert data.len mod 64 == 0
 
 # yields every 512-bit (64-byte) chunk of `data`
@@ -122,7 +123,6 @@ proc compress(data : openArray[uint32]) =
             b = a
             a = temp1 + temp2
         ]#
-        discard # replace with code
 
     # After the compression loop, but still, within the chunk loop,
     # we modify the hash values by adding their respective variables to them, a-h.
@@ -145,7 +145,7 @@ when isMainModule:
     dump data.len
     for chunk in data.chunks:
         dump chunk
-        var messageSchedule = createMessageSchedule(data)
+        var messageSchedule = createMessageSchedule(chunk)
         dump messageSchedule
         compress(messageSchedule)
 
