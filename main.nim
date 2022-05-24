@@ -40,7 +40,7 @@ proc `$`[T : SomeInteger](s : seq[T]) : string =
 
 proc preprocess(data : var seq[byte]) =
     let # original length in bits
-        bitLen = data.len*8
+        bitLen = data.len.uint*8
 
     # add single 1 bit
     data &= 0b1000_0000

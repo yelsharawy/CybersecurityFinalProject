@@ -22,3 +22,7 @@ Angela: I started looking how we could structure our presentation slides. I did 
 Yusuf: From home (because I was absent), I prepared the skeleton code for the last parts of the algorithm. I also helped Angela understand the significance of a collision method being found for a hash algorithm.
 
 Angela: I researched history of SHA algorithms to provide some context in our presentation slides and finished the compression function by filling in Yusuf's skeleton code. 
+
+05/24/2022
+
+We finished the algorithm and made sure it worked even with multiple chunks. We spent the period doing research on the reasoning behind the SHA-256 algorithm (which was not an easy question to answer). We also brainstormed ideas on how we could extend our tool, what kind of presentation we would give, and what homework we could assign to the students. Ideas that came up included "customization" with different constants, extending it into a hashcat-like program (only for SHA), and telling the students to brute force a hash using our own short password list.
