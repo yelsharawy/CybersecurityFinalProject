@@ -12,6 +12,10 @@ var hashValues : array[8, uint32] = [
     0x5be0cd19'u32
 ]
 
+proc `$`(a : array[8, uint32]) : string =
+    for x in a:
+        result &= x.toHex 8
+
 const roundConstants : array[64, uint32] = [
     0x428a2f98'u32, 0x71374491'u32, 0xb5c0fbcf'u32, 0xe9b5dba5'u32, 0x3956c25b'u32, 0x59f111f1'u32, 0x923f82a4'u32, 0xab1c5ed5'u32,
     0xd807aa98'u32, 0x12835b01'u32, 0x243185be'u32, 0x550c7dc3'u32, 0x72be5d74'u32, 0x80deb1fe'u32, 0x9bdc06a7'u32, 0xc19bf174'u32,
@@ -87,12 +91,13 @@ proc compress(data : openArray[uint32]) =
     var hashVars = hashValues
     # Run the compression loop. The compression loop will mutate the values of a…h. The compression loop is as follows:
     for i in 0..63:
-        S1 = rightRotate(hashVars[4], 6) xor rightRotate(hashVars[4], 11) xor rightRotate(hashVars[4], 25)
-        ch = (hashVars[4] and hashVars[5]) xor ((not hashVars[4]) and hashVars[6])
-        temp1 = hashVars[7] + S1 + ch + roundConstants[i] + data[i]
-        S0 = rightRotate(hashVars[0], 2) xor rightRotate(hashVars[0], 13) xor rightRotate(hashVars[0], 22)
-        maj = (hashVars[0] and hashVars[1]) xor (hashVars[0] and hashVars[2]) xor (hashVars[1] and hashVars[2])
-        temp2 = S0 + maj
+        let
+            S1 = rightRotate(hashVars[4], 6) xor rightRotate(hashVars[4], 11) xor rightRotate(hashVars[4], 25)
+            ch = (hashVars[4] and hashVars[5]) xor ((not hashVars[4]) and hashVars[6])
+            temp1 = hashVars[7] + S1 + ch + roundConstants[i] + data[i]
+            S0 = rightRotate(hashVars[0], 2) xor rightRotate(hashVars[0], 13) xor rightRotate(hashVars[0], 22)
+            maj = (hashVars[0] and hashVars[1]) xor (hashVars[0] and hashVars[2]) xor (hashVars[1] and hashVars[2])
+            temp2 = S0 + maj
         hashVars[7] = hashVars[6]
         hashVars[6] =hashVars[5]
         hashVars[5] = hashVars[4]
@@ -122,7 +127,8 @@ proc compress(data : openArray[uint32]) =
     # After the compression loop, but still, within the chunk loop,
     # we modify the hash values by adding their respective variables to them, a-h.
     # As usual, all addition is modulo 2^32. (In Nim, just add, it will modulo by itself)
-    discard # replace with code
+    for i, v in hashValues.mpairs:
+        v += hashVars[i]
 
 
 when isMainModule:
