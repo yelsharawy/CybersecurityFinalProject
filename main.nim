@@ -87,6 +87,20 @@ proc compress(data : openArray[uint32]) =
     var hashVars = hashValues
     # Run the compression loop. The compression loop will mutate the values of a…h. The compression loop is as follows:
     for i in 0..63:
+        S1 = rightRotate(hashVars[4], 6) xor rightRotate(hashVars[4], 11) xor rightRotate(hashVars[4], 25)
+        ch = (hashVars[4] and hashVars[5]) xor ((not hashVars[4]) and hashVars[6])
+        temp1 = hashVars[7] + S1 + ch + roundConstants[i] + result[i]
+        S0 = rightRotate(hashVars[0], 2) xor rightRotate(hashVars[0], 13) xor rightRotate(hashVars[0], 22)
+        maj = (hashVars[0] and hashVars[1]) xor (hashVars[0] and hashVars[2]) xor (hashVars[1] and hashVars[2])
+        temp2 = S0 + maj
+        hashVars[7] = hashVars[6]
+        hashVars[6] =hashVars[5]
+        hashVars[5] = hashVars[4]
+        hashVars[4] = hashVars[3] + temp1
+        hashVars[3] = hashVars[2]
+        hashVars[2] = hashVars[1]
+        hashVars[1] = hashVars[0]
+        hashVars[0] = temp1 + temp2 
         #[
             S1 = (e rightrotate 6) xor (e rightrotate 11) xor (e rightrotate 25)
             ch = (e and f) xor ((not e) and g)
@@ -104,7 +118,7 @@ proc compress(data : openArray[uint32]) =
             a = temp1 + temp2
         ]#
         discard # replace with code
-    
+
     # After the compression loop, but still, within the chunk loop,
     # we modify the hash values by adding their respective variables to them, a-h.
     # As usual, all addition is modulo 2^32. (In Nim, just add, it will modulo by itself)
@@ -128,5 +142,5 @@ when isMainModule:
         var messageSchedule = createMessageSchedule(data)
         dump messageSchedule
         compress(messageSchedule)
-    
+
     dump hashValues # final hash! (printed in decimal for now)

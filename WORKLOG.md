@@ -15,6 +15,6 @@ Yusuf: At home, I fixed syntax errors, then realized that our code was producing
 
 05/22/2022
 
-Angela: I started looking how we could structure our presentation slides. I did an introduction summary to hashing functions and put a rudimentary outline of how I want the rest of the slides to look. 
+Angela: I started looking how we could structure our presentation slides. I did an introduction summary to hashing functions and put a rudimentary outline of how I want the rest of the slides to look.
 
 Yusuf: From home (because I was absent), I prepared the skeleton code for the last parts of the algorithm. I also helped Angela understand the significance of a collision method being found for a hash algorithm.
