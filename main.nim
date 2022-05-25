@@ -1,18 +1,9 @@
 #!/bin/env -S nim r
 import std/[os, strutils, endians, sugar]
 
-var hashValues : array[8, uint32] = [
-    0x6a09e667'u32,
-    0xbb67ae85'u32,
-    0x3c6ef372'u32,
-    0xa54ff53a'u32,
-    0x510e527f'u32,
-    0x9b05688c'u32,
-    0x1f83d9ab'u32,
-    0x5be0cd19'u32
-]
+type Hash = array[8, uint32]
 
-proc `$`(a : array[8, uint32]) : string =
+proc `$`(a : Hash) : string =
     for x in a:
         result &= x.toHex 8
 
@@ -85,68 +76,72 @@ proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
             s1 = rightRotate(result[i-2], 17) xor rightRotate(result[i-2], 19) xor result[i-2] shr 10
         result[i] = result[i-16] + s0 + result[i-7] + s1
 
-# Step 6 - Compression (& 7)
-proc compress(data : openArray[uint32]) =
+proc addCompressed(hash : var Hash; w : openArray[uint32]) =
+    # Step 6 - Compression (& 7)
     # Initialize variables a, b, c, d, e, f, g, h and set them equal to the current hash values respectively.
     # here we're just using an array as a-h
-    var hashVars = hashValues
+    var hashVars = hash
     # Run the compression loop. The compression loop will mutate the values of a…h. The compression loop is as follows:
     for i in 0..63:
         let
             S1 = rightRotate(hashVars[4], 6) xor rightRotate(hashVars[4], 11) xor rightRotate(hashVars[4], 25)
             ch = (hashVars[4] and hashVars[5]) xor ((not hashVars[4]) and hashVars[6])
-            temp1 = hashVars[7] + S1 + ch + roundConstants[i] + data[i]
+            temp1 = hashVars[7] + S1 + ch + roundConstants[i] + w[i]
             S0 = rightRotate(hashVars[0], 2) xor rightRotate(hashVars[0], 13) xor rightRotate(hashVars[0], 22)
             maj = (hashVars[0] and hashVars[1]) xor (hashVars[0] and hashVars[2]) xor (hashVars[1] and hashVars[2])
             temp2 = S0 + maj
         hashVars[7] = hashVars[6]
-        hashVars[6] =hashVars[5]
+        hashVars[6] = hashVars[5]
         hashVars[5] = hashVars[4]
         hashVars[4] = hashVars[3] + temp1
         hashVars[3] = hashVars[2]
         hashVars[2] = hashVars[1]
         hashVars[1] = hashVars[0]
         hashVars[0] = temp1 + temp2
-        #[
-            S1 = (e rightrotate 6) xor (e rightrotate 11) xor (e rightrotate 25)
-            ch = (e and f) xor ((not e) and g)
-            temp1 = h + S1 + ch + k[i] + w[i]
-            S0 = (a rightrotate 2) xor (a rightrotate 13) xor (a rightrotate 22)
-            maj = (a and b) xor (a and c) xor (b and c)
-            temp2 := S0 + maj
-            h = g
-            g = f
-            f = e
-            e = d + temp1
-            d = c
-            c = b
-            b = a
-            a = temp1 + temp2
-        ]#
-
+    
+    # Step 7
     # After the compression loop, but still, within the chunk loop,
     # we modify the hash values by adding their respective variables to them, a-h.
     # As usual, all addition is modulo 2^32. (In Nim, just add, it will modulo by itself)
-    for i, v in hashValues.mpairs:
+    for i, v in hash.mpairs:
         v += hashVars[i]
+
+proc sha256(data : seq[byte]) : Hash =
+    dump data
+    # Step 1: Preprocess
+    let padded = data.dup(preprocess)
+    dump padded
+    dump padded.len
+    # Step 2: Initialize hash values
+    result = [
+        0x6a09e667'u32,
+        0xbb67ae85'u32,
+        0x3c6ef372'u32,
+        0xa54ff53a'u32,
+        0x510e527f'u32,
+        0x9b05688c'u32,
+        0x1f83d9ab'u32,
+        0x5be0cd19'u32
+    ]
+    # Step 4: Chunk loop
+    
+    for chunk in padded.chunks:
+        dump chunk
+        var messageSchedule = createMessageSchedule(chunk)
+        dump messageSchedule
+        result.addCompressed(messageSchedule)
+    
+
+proc sha256(str : string) : Hash =
+    var data : seq[byte]
+    for c in str:
+        data &= byte c
+    result = sha256(data)
 
 
 when isMainModule:
     var # read from first argument, or stdin if none given
         inputStr = if paramCount() >= 1: readFile(paramStr(1)) else: stdin.readAll
-        data : seq[byte]
-
-    for c in inputStr:
-        data &= byte c
-
-    dump data
-    preprocess(data)
-    dump data
-    dump data.len
-    for chunk in data.chunks:
-        dump chunk
-        var messageSchedule = createMessageSchedule(chunk)
-        dump messageSchedule
-        compress(messageSchedule)
-
-    dump hashValues # final hash! (printed in decimal for now)
+    
+    dump sha256(inputStr)
+    
