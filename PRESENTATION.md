@@ -52,7 +52,7 @@ Step 2: Pre-Processing
 
 The message is first converted to binary and then padded by first appending a 1, followed by enough 0s until the message is 448 bits. The length of the message which is 64 bits is then added to the end, producing a message that is 512 bits long. This explains why the input message length should be maximum of 2^64 - 1 bits.
 
-data =
+data = <br>
 01101000 01100101 01101100 01101100 01101111 00100000 01110111 01101111
 01110010 01101100 01100100 10000000 00000000 00000000 00000000 00000000
 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
@@ -66,7 +66,7 @@ Step 3: Create Message Schedule
 
 We resplit the message into a new array where each entry is a 32-bit word and then add 48 more 32-bit entries initialized to zero. Now we have an array with indexes 0-63.
 
-w = 
+w = <br>
 01101000011001010110110001101100 01101111001000000111011101101111
 01110010011011000110010010000000 00000000000000000000000000000000
 00000000000000000000000000000000 00000000000000000000000000000000
@@ -89,7 +89,7 @@ For i from w[16…63]:
     s1 = (w[i- 2] rightrotate 17) xor (w[i- 2] rightrotate 19) xor (w[i- 2] rightshift 10)
     w[i] = w[i-16] + s0 + w[i-7] + s1
 
-w = 
+w = <br>
 01101000011001010110110001101100 01101111001000000111011101101111
 01110010011011000110010010000000 00000000000000000000000000000000
 00000000000000000000000000000000 00000000000000000000000000000000
