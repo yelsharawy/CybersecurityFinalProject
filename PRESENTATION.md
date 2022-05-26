@@ -124,7 +124,7 @@ w = 01101000011001010110110001101100 01101111001000000111011101101111
 **Step 6: Slap it all together**
 
 ```
-digest = h0 + h1 + h2 + h3 + h4 + h5 + h6 + h7
+digest = h0 append h1 append h2 append h3 append h4 append h5 append h6 append h7
 ```
 
 Resource: https://www.simplilearn.com/tutorials/cyber-security-tutorial/sha-256-algorithm
