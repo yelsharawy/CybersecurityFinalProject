@@ -34,3 +34,5 @@ We decided on what we wanted to do for our presentation & assignment. We also re
 05/26/2022
 
 Angela: I finished up most of the presentation including the "create message schedule" and the context section. Meanwhile, Yusuf strongly persuaded me to switch from Atom to VSCode.
+
+Yusuf: I worked towards generalizing the hash algorithm to allow for SHA-224 and SHA-256, and eventually SHA-512 and SHA-384.
