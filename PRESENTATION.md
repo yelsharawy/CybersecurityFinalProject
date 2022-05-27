@@ -139,3 +139,4 @@ digest = h0 append h1 append h2 append h3 append h4 append h5 append h6 append h
 
 Resource: https://www.simplilearn.com/tutorials/cyber-security-tutorial/sha-256-algorithm
 https://brilliant.org/wiki/secure-hashing-algorithms/
+https://www.simplilearn.com/tutorials/cyber-security-tutorial/sha-256-algorithm
