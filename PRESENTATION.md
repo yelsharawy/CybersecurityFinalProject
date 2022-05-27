@@ -26,6 +26,13 @@ While SHA-1 produces 160-bit digests, SHA-2 produces 224 or 256 bit-sized digest
 
 ### Applications of Hashing
 
+Applications include: 
+
+Passwords: Most websites convert user passwords into a hash value before storing it. During login, the hash value is recalculated and compared with the one stores in the database. 
+
+Image integrity: When a file is uploaded to a website, its hash is stored. When a user downloads the file, its hash is recalculated and compared to ensure data integrity.
+
+
 ## Breakdown of Hash Algorithm
 **Step 1: Initiate Hash Values and Round Constants**
 
