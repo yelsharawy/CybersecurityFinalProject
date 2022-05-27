@@ -29,4 +29,8 @@ We finished the algorithm and made sure it worked even with multiple chunks. We 
 
 05/25/2022
 
-We decided on what we wanted to do for our presentation & assignment. We also refactored the code to allow for multiple hashes to be executed (encapsulated function instead of globals), and troubleshooted `brew` and `nim` and Angela's laptop (I hate MacOS).
+We decided on what we wanted to do for our presentation & assignment. We also refactored the code to allow for multiple hashes to be executed (encapsulated function instead of globals), and troubleshooted `brew` and `nim` and Angela's laptop (I hate MacOS). 
+
+05/26/2022
+
+Angela: I finished up most of the presentation including the "create message schedule" and the context section. Meanwhile, Yusuf strongly persuaded me to switch from Atom to VSCode.

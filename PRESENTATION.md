@@ -18,7 +18,11 @@ Hashing is a one-way process of scrambling raw information that cannot be revers
 
 ### History of SHA hash functions
 
-The SHA family algorithm was originally created developed by the US National Security Agency (NSA) and published by the National Institute of Standards and Technology (NIST). Its first version SHA-0, published in 1930, had a 160 bit digest length and 40 digit long has values. However, SHA-0 was eventually cracked
+The SHA family algorithm was originally created developed by the US National Security Agency (NSA) and published by the National Institute of Standards and Technology (NIST). Its first version SHA-0, published in 1930, had a 160 bit digest length and 40 digit long has values. However, they found security issues with SHA-0 and developed SHA-1 which was also eventually found to have vulnerabilities.
+
+While SHA-1 produces 160-bit digests, SHA-2 produces 224 or 256 bit-sized digests. NSA designed SHA-2 to be more secure than SHA-1 by increasing collision resistance. A hash function is collision resistant if's difficult to find two inputs that hash to the same output (two inputs a and b s.t H(a) = H(b), where a ≠ b). 
+
+<!-- Yusuf, can u check this is correct?  -->
 
 ### Applications of Hashing
 
@@ -128,3 +132,4 @@ digest = h0 append h1 append h2 append h3 append h4 append h5 append h6 append h
 ```
 
 Resource: https://www.simplilearn.com/tutorials/cyber-security-tutorial/sha-256-algorithm
+https://brilliant.org/wiki/secure-hashing-algorithms/
