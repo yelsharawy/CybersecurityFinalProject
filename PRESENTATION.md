@@ -32,7 +32,6 @@ Passwords: Most websites convert user passwords into a hash value before storing
 
 Image integrity: When a file is uploaded to a website, its hash is stored. When a user downloads the file, its hash is recalculated and compared to ensure data integrity.
 
-
 ## Breakdown of Hash Algorithm
 **Step 1: Initiate Hash Values and Round Constants**
 
