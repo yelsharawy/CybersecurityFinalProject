@@ -36,3 +36,7 @@ We decided on what we wanted to do for our presentation & assignment. We also re
 Angela: I finished up most of the presentation including the "create message schedule" and the context section. Meanwhile, Yusuf strongly persuaded me to switch from Atom to VSCode.
 
 Yusuf: I worked towards generalizing the hash algorithm to allow for SHA-224 and SHA-256, and eventually SHA-512 and SHA-384.
+
+05/27/2022
+
+Yusuf: I started to split the code up into multiple files (to separate user interaction from the actual algorithm), and got a minimal CLI set up to choose a hash algorithm and provide a list of files to hash. I also brainstormed ways I could implement SHA-512-like hashes (of 64-bit words) without copying and pasting a bunch of code, while also keeping it readable.
