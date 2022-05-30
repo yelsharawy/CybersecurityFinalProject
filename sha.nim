@@ -7,8 +7,9 @@ when not defined(debug):
 type
     # defines the HashConfig type as an object with these fields
     HashConfig* {.byref.} = object
-        numIterations* : int # number of iterations in compression
-        chunkSize* : int
+        # support for SHA-512 or 384 has been scrapped for technical complications
+        # chunkSize* : int # size of each chunk
+        # numIterations* : int # number of iterations in compression
         initialHash* : Hash
         hashLength* : int # crops length of output to this many words
         roundConstants* : ptr UncheckedArray[uint32] # should have same length as `numIterations`
@@ -77,8 +78,8 @@ converter uncheck[N;T](arr : array[N,T]) : auto =
 # create mapping from names of algorithms to their configurations
 let builtinConfigs* = toTable[string, HashConfig]({
     "sha256": HashConfig(
-        numIterations: 64,
-        chunkSize: 64,
+        # numIterations: 64,
+        # chunkSize: 64,
         initialHash: @[
             0x6a09e667'u32, 0xbb67ae85'u32, 0x3c6ef372'u32, 0xa54ff53a'u32,
             0x510e527f'u32, 0x9b05688c'u32, 0x1f83d9ab'u32, 0x5be0cd19'u32
@@ -87,8 +88,8 @@ let builtinConfigs* = toTable[string, HashConfig]({
         roundConstants: uncheck sha256roundConstants,
     ),
     "sha224": HashConfig(
-        numIterations: 64,
-        chunkSize: 64,
+        # numIterations: 64,
+        # chunkSize: 64,
         initialHash: @[
             0xc1059ed8'u32, 0x367cd507'u32, 0x3070dd17'u32, 0xf70e5939'u32,
             0xffc00b31'u32, 0x68581511'u32, 0x64f98fa7'u32, 0xbefa4fa4'u32
@@ -122,6 +123,9 @@ proc rightRotate(x : uint32, d: uint32) : uint32 =
     var second = x shl (32 - d)
     return first or second
 
+# allows for `x >>> y` instead of `rightRotate(x, y)`
+template `>>>`(x, y : uint32) : uint32 = rightRotate(x, y)
+
 # TODO: correctly adapt this for variable message schedule size
 proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
     assert data.len == 64
@@ -142,24 +146,23 @@ proc createMessageSchedule(data : openArray[byte]) : seq[uint32] =
     ]#
     for i in 16..63:
         let
-            s0 = rightRotate(result[i-15], 7) xor rightRotate(result[i-15], 18) xor result[i-15] shr 3
-            s1 = rightRotate(result[i-2], 17) xor rightRotate(result[i-2], 19) xor result[i-2] shr 10
+            s0 = result[i-15] >>> 7 xor result[i-15] >>> 18 xor result[i-15] shr 3
+            s1 = result[i-2] >>> 17 xor result[i-2] >>> 19 xor result[i-2] shr 10
         result[i] = result[i-16] + s0 + result[i-7] + s1
 
-proc addCompressed(hash : var Hash; w : openArray[uint32],
-                numIterations : int, roundConstants : ptr UncheckedArray[uint32]) =
+proc addCompressed(hash : var Hash; w : openArray[uint32], roundConstants : ptr UncheckedArray[uint32]) =
     # Step 6 - Compression (& 7)
     # Initialize variables a, b, c, d, e, f, g, h and set them equal to the current hash values respectively.
     # here we're just using an array as a-h
     var hashVars = hash
     dump hashVars
     # Run the compression loop. The compression loop will mutate the values of a…h. The compression loop is as follows:
-    for i in 0..<numIterations:
+    for i in 0..<64:
         let
-            S1 = rightRotate(hashVars[4], 6) xor rightRotate(hashVars[4], 11) xor rightRotate(hashVars[4], 25)
+            S1 = hashVars[4] >>> 6 xor hashVars[4] >>> 11 xor hashVars[4] >>> 25
             ch = (hashVars[4] and hashVars[5]) xor ((not hashVars[4]) and hashVars[6])
             temp1 = hashVars[7] + S1 + ch + roundConstants[i] + w[i]
-            S0 = rightRotate(hashVars[0], 2) xor rightRotate(hashVars[0], 13) xor rightRotate(hashVars[0], 22)
+            S0 = hashVars[0] >>> 2 xor hashVars[0] >>> 13 xor hashVars[0] >>> 22
             maj = (hashVars[0] and hashVars[1]) xor (hashVars[0] and hashVars[2]) xor (hashVars[1] and hashVars[2])
             temp2 = S0 + maj
         hashVars[7] = hashVars[6]
@@ -189,11 +192,11 @@ proc sha*(cfg : HashConfig, data : seq[byte]) : Hash =
     result = cfg.initialHash
     # Step 4: Chunk loop
     
-    for chunk in padded.chunks(cfg.chunkSize):
+    for chunk in padded.chunks(64):
         dump chunk
         var messageSchedule = createMessageSchedule(chunk)
         dump messageSchedule
-        result.addCompressed(messageSchedule, cfg.numIterations, cfg.roundConstants)
+        result.addCompressed(messageSchedule, cfg.roundConstants)
     
     result.setLen cfg.hashLength
     

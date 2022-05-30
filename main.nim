@@ -5,7 +5,7 @@ import sha
 when isMainModule:
     var
         chosenCfg = builtinConfigs["sha256"]
-        givenFiles : seq[string]
+        toHash : seq[tuple[data, label : string]]
     
     var p = initOptParser()
     while true:
@@ -15,19 +15,24 @@ when isMainModule:
         of cmdEnd: break
         of cmdShortOption:
             case p.key
-            of "a":
+            of "a": # choose algorithm
                 chosenCfg = builtinConfigs[p.val]
+            of "w": # add wordlist
+                for hashStr in lines(p.val):
+                    toHash &= (hashStr, "".dup(addQuoted(hashStr)))
+            of "": # just "-" given as an argument -- treat as stdin
+                toHash &= (stdin.readAll, "-")
             else:
                 stdout.writeLine "unrecognized flag ", p.key
                 quit QuitFailure
         of cmdLongOption:
             discard
         of cmdArgument:
-            givenFiles &= p.key
+            toHash &= (readFile(p.key), p.key)
     
-    if givenFiles.len > 0:
-        for filename in givenFiles:
-            echo toString(chosenCfg.sha readFile filename), "  ", filename
-    else:
-        echo toString(chosenCfg.sha stdin.readAll), "  -"
+    if toHash.len == 0:
+        toHash &= (stdin.readAll, "-")
+    
+    for (data, label) in toHash:
+        echo toString(chosenCfg.sha(data)), "  ", label
     
