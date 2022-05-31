@@ -10,7 +10,7 @@
 
 *Note this part is not optional*
 
-4. Set the intial hash value to `0000000000000000000000000000000000000000000000000000000000000000`. What is the output?
+4. Set the intial hash value to `0000000000000000000000000000000000000000000000000000000000000000` and hash the string `hello world` again. What is the output?
 5. Using the -w flag and wordlist.txt, find the password with the SHA-256 hash of `5edc50ed2b24e384cf04e0032f63bd9e6e95f5e7b122c0ddf38e2f7919ce0ea6`
    <details>
    <summary>Hint</summary>
