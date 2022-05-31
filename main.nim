@@ -1,5 +1,5 @@
 #!/bin/env -S nim r
-import std/[sugar, parseopt, tables, options]
+import std/[sugar, parseopt, tables, options, strutils]
 import sha
 
 when isMainModule:
@@ -11,17 +11,51 @@ when isMainModule:
     
     var p = initOptParser()
     
-    # template 
+    # template to get value from option / next argument
     template getVal : untyped =
-        if p.kind == cmdArgument: p.key
+        case p.kind
+        of cmdArgument: p.key
         elif p.val != "": p.val
         else:
             let flag = p.key
             p.next()
             if p.kind != cmdArgument:
-                stderr.writeLine "expected argument for flag ".dup(addQuoted(flag))
+                stderr.writeLine "expected argument for flag: ".dup(addQuoted(flag))
                 quit QuitFailure
             p.key
+    
+    # each command is defined as a template
+    # so we don't have to copy & paste the code in multiple places
+    template setConfig : untyped =
+        if getVal() notin builtinConfigs:
+            stderr.writeLine "unknown hash kind: ".dup(addQuoted(getVal()))
+            quit QuitFailure
+        chosenCfg = builtinConfigs[getVal()]
+    
+    template addWordlist : untyped =
+        for hashStr in lines(getVal()):
+            toHash &= (hashStr, "".dup(addQuoted(hashStr)))
+    
+    template showHelp(quitCode = QuitSuccess) : untyped =
+        stderr.write """
+Usage: sha-ya [OPTION]... [FILE]...
+Print or check SHA256 or SHA224 checksums.
+
+With no FILE, or when FILE is -, read standard input.
+
+  -a, --algo {sha224|sha256}    choose SHA algorithm to use
+  -w, --wordlist <file>         hash each line of this file separately
+  -i, --initial <hash>          set initial hash, as 64 characters of hex
+  -l, --length <n>              set final hash length (1 <= n <= 8)
+  -h, --help                    display this help and exit
+
+The order of the options and arguments does not matter: `-i` and `-l` always take precedence over `-a`.
+"""
+        quit quitCode
+
+    template unrecognizedFlag : untyped =
+        stderr.writeLine "unknown option: ".dup(addQuoted(p.key))
+        showHelp QuitFailure
     
     while true:
         p.next()
@@ -29,20 +63,20 @@ when isMainModule:
         case p.kind
         of cmdEnd: break
         of cmdShortOption:
-            case p.key
-            of "a": # choose algorithm
-                chosenCfg = builtinConfigs[getVal()]
-            of "w": # add wordlist
-                for hashStr in lines(getVal()):
-                    toHash &= (hashStr, "".dup(addQuoted(hashStr)))
+            case p.key.normalize
+            of "a": setConfig() # choose algorithm
+            of "w": addWordlist() # add wordlist
             of "": # just "-" given as an argument -- treat as stdin
                 toHash &= (stdin.readAll, "-")
+            of "h": showHelp()
             else:
-                stderr.writeLine "unrecognized flag ", p.key
-                quit QuitFailure
+                unrecognizedFlag()
         of cmdLongOption:
-            stderr.writeLine "unrecognized flag ", p.key
-            quit QuitFailure
+            case p.key.normalize
+            of "algo": setConfig()
+            of "wordlist": addWordlist()
+            of "help": showHelp()
+            else: unrecognizedFlag()
         of cmdArgument:
             toHash &= (readFile(p.key), p.key)
     
