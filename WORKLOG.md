@@ -47,3 +47,5 @@ Yusuf: I worked towards generalizing the hash algorithm to allow for SHA-224 and
 ----------
 
 Yusuf: I started to split the code up into multiple files (to separate user interaction from the actual algorithm), and got a minimal CLI set up to choose a hash algorithm and provide a list of files to hash. I also brainstormed ways I could implement SHA-512-like hashes (of 64-bit words) without copying and pasting a bunch of code, while also keeping it readable.
+
+Angela: I finished my part of the presentation and explained to yusuf which parts I left for him, and how it's structured. 
