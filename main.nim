@@ -75,7 +75,7 @@ when isMainModule:
     template showHelp(quitCode = QuitSuccess) =
         stderr.write """
 Usage: sha-ya [OPTION]... [FILE]...
-Print or check SHA256 or SHA224 checksums.
+Print SHA256 or SHA224 checksums.
 
 With no FILE, or when FILE is -, read standard input.
 
@@ -85,7 +85,7 @@ With no FILE, or when FILE is -, read standard input.
   -l, --length <n>              set final hash length (1 <= n <= 8)
   -h, --help                    display this help and exit
 
-The order of the options and arguments does not matter: `-i` and `-l` always take precedence over `-a`.
+The order of the options and arguments does not matter: `--initial` and `--length` always take precedence over `--algo`.
 
 Note that SHA256 would be configured like so:
     --initial:6a09e667bb67ae853c6ef372a54ff53a510e527f9b05688c1f83d9ab5be0cd19
