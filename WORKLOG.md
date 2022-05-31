@@ -53,4 +53,5 @@ Angela: I finished my part of the presentation and explained to yusuf which part
 05/31/2022
 ----------
 
-Yusuf improved the CLI, added --help, and created flags that allowed the user to give an initial hash & final length. He also figured out how he would distribute the project and added some updates to the presentation slides. We finished discussing what questions we wanted to give homework for and created our own wordlist. 
+Yusuf improved the CLI, added --help, and created flags that allowed the user to give an initial hash & final length. He also figured out how he would distribute the project and added some updates to the presentation slides. We finished discussing what questions we wanted to give homework for and created our own wordlist.  
+Note: We used VS Code's Live Share feature to work on the project simultaneously, like Google Docs. For this reason, the commits for today are all from Yusuf's account.
